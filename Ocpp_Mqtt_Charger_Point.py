@@ -1,9 +1,10 @@
 import asyncio
 import logging
-import websockets
+import paho.mqtt.client as mqtt_client
 
 from ocpp.v201 import call
 from ocpp.v201 import ChargePoint as cp
+import random
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,16 +25,23 @@ class ChargePoint(cp):
            print("Connected to central system.")
 
 
-async def main():
-   async with websockets.connect(
-       'ws://localhost:9000/CP_1',
-        subprotocols=['ocpp2.0.1']
-   ) as ws:
+def main():
 
-       cp = ChargePoint('CP_1', ws)
+    client = mqtt_client.Client('reza' + str(random.randint(0, 50)))
 
-       await asyncio.gather(cp.start(), cp.send_boot_notification())
+    broker_id = "mqtt.eclipseprojects.io"
 
+    client.connect(broker_id, 1883)
+    send_topic = 'reza/ocpp/central/'
+    get_topic = 'reza/ocpp/charge_point/'
+
+    cp = ChargePoint('CP_1', client, send_topic, get_topic, 'data/charge_point/charge_point')
+
+    print('charge point start ...\n')
+
+    # asyncio.gather(cp.manage_message(), cp.send_boot_notification())
+    #await cp.send_boot_notification()
+    cp.manage_message()
 
 if __name__ == '__main__':
    asyncio.run(main())
