@@ -3,7 +3,7 @@ import time
 import random
 
 # information
-broker_id = "mqtt.eclipseprojects.io"
+broker_id = "broker.hivemq.com"
 topic = 'RezaBhm10/Example/Status'
 client_id = 'rezabhm50'
 

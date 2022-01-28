@@ -22,30 +22,43 @@ class ChargePoint(cp):
         )
 
 
-def on_connect(mqtt_connection, path):
-    """ For every new charge point that connects, create a ChargePoint
+def on_connect(mqtt_connection):
+
+    """
+    For every new charge point that connects, create a ChargePoint
     instance and start listening for messages.
     """
 
-    get_topic = 'reza/ocpp/central/'
-    send_topic = 'reza/ocpp/charge_point/'
+    topic_list = [
 
-    charge_point_id = path.strip('/')
-    cp = ChargePoint(charge_point_id, mqtt_connection, send_topic, get_topic, 'data/server/server')
+        {'send_topic': 'reza/ocpp_old/mqtt/charge_point_0/recv/',
+         'recv_topic': 'reza/ocpp_old/mqtt/charge_point_0/send/',
+         'charge_point_id': 'charge_point_0',
+         },
+
+        {'send_topic': 'reza/ocpp_old/mqtt/charge_point_1/recv/',
+         'recv_topic': 'reza/ocpp_old/mqtt/charge_point_1/send/',
+         'charge_point_id': 'charge_point_1',
+         },
+
+    ]
+
+    cp = ChargePoint('Central_system_Root', mqtt_connection, topic_list, ['data/server/server.json',])
 
     cp.manage_message()
 
 
 def main():
 
-    client = mqtt_client.Client('reza'+str(random.randint(0, 50)))
+    client = mqtt_client.Client('chargeV'+str(random.randint(0, 50)))
 
-    broker_id = "mqtt.eclipseprojects.io"
+    broker_id = "broker.emqx.io"
 
     client.connect(broker_id, 1883)
 
     logging.info("WebSocket Server Started")
-    on_connect(client, '/reza/bhm/12901290/')
+    on_connect(client)
+
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    main()

@@ -29,19 +29,20 @@ def main():
 
     client = mqtt_client.Client('reza' + str(random.randint(0, 50)))
 
-    broker_id = "mqtt.eclipseprojects.io"
+    broker_id = "broker.emqx.io"
 
     client.connect(broker_id, 1883)
-    send_topic = 'reza/ocpp/central/'
-    get_topic = 'reza/ocpp/charge_point/'
 
-    cp = ChargePoint('CP_1', client, send_topic, get_topic, 'data/charge_point/charge_point')
+    topic_list = ['reza/ocpp_old/mqtt/charge_point_0/send/', 'reza/ocpp_old/mqtt/charge_point_0/recv/']
+    cp = ChargePoint('charge_point_0', client, topic_list, ['data/charge_point/charge_point.json',
+                                                            'data/charge_point/charge_point2.json'], False)
 
     print('charge point start ...\n')
 
     # asyncio.gather(cp.manage_message(), cp.send_boot_notification())
-    #await cp.send_boot_notification()
+    # await cp.send_boot_notification()
     cp.manage_message()
 
+
 if __name__ == '__main__':
-   asyncio.run(main())
+   main()
